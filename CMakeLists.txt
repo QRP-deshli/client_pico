@@ -41,10 +41,11 @@ target_link_libraries(${TARGET_NAME}
     DHCP_FILES
 )
 
-# If using Debug mode, configure USB and UART
-pico_enable_stdio_usb(${TARGET_NAME} 1)
-pico_enable_stdio_uart(${TARGET_NAME} 0)
+# Macros for defining communication type
+pico_enable_stdio_usb(${TARGET_NAME} 1) # Set to 0 for UART communication
+pico_enable_stdio_uart(${TARGET_NAME} 0) # Set to 1 for USB communication
 
+# Set to 0 to use UART cable for communication, set to 1, to use USB
 target_compile_definitions(${TARGET_NAME} PRIVATE PICO_STDIO_USB_ENABLE=1)
 
 # Add extra outputs (like UF2 file for Raspberry Pi Pico)
