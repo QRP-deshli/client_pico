@@ -24,6 +24,8 @@ nahodnych cisel.
 To znamena, ze vsetky vystupy na MCU (`stdin`, `stdout`, `stderr`) su 
 smerovane na UART piny (`Rx` a `Tx`).
 
+# Komunikacia s sifrovacim modulom taktiez je zabezpecena pomocou USB.
+
 # Pripojenie cez Ethernet: Ethernet sa pouziva na komunikaciu so serverom.
 
 # Citanie zamaskovaneho kluca a soli z flash pamati: Kluc a sol musia byt 
@@ -190,7 +192,7 @@ Program je kompatibilny pre vyvojovu dosku Wiznet W5100S-EVB-Pico:
 
 #Verzie nastrojov:
 arm-none-eabi 14.2.Rel1
-Pico SDK 2.1.0
+Pico SDK 2.1.1
 Wiznet SDK 2.0.0
 Cmake: 3.31.3
 Python: 3.11.9
@@ -200,10 +202,24 @@ Tento softver je kompatibilny s verziou 0.7.5 softveru pre Windows a Linux.
 Program zabezpecuje pouzitie dosky Wiznet W5100S-EVB-Pico ako klienta 
 pri chatovani.
 Aby tento softver fungoval spravne, uzivatel musi na zaciatku nahrat 
-zabezpecovaci kluc a sol do flash pamate dosky pomocou programu flash_key_salt.
-Po nahrati mozete nahrat tento softver na dosku, ktora bude spojena 
-s pocitacom pomocou serioveho kabla cez UART0, a ethernet kablom bude 
-spojena so serverom.
+maskovani kluc pre autentizaciu a sol do flash pamate dosky pomocou 
+programu flash_key_salt. Po nahrati mozete nahrat tento softver na dosku, 
+ktora bude spojena s pocitacom pomocou serioveho kabla bud cez UART0(UART kabel), 
+alebo USB port na doske (USB kabel) a ethernet kablom bude spojena so serverom.
+
+#!!! 
+
+Pre spravne nastavenie sposobu komunikacie s doskou (UART alebo USB) je potrebne 
+upravit hodnoty makier v subore CMakeLists.txt a nasledne rekompilovat projekt:
+
+pico_enable_stdio_usb(${TARGET_NAME} 1) — nastavte na 0 pre UART, na 1 pre USB.
+
+pico_enable_stdio_uart(${TARGET_NAME} 0) — nastavte na 1 pre UART, na 0 pre USB.
+
+target_compile_definitions(${TARGET_NAME} PRIVATE PICO_STDIO_USB_ENABLE=1) 
+— nastavte na 1 pre USB a na 0 pre UART.
+
+#!!!
 
 Pri spusteni je dolezite nastavit terminal takto:
 Baud rate: 115200
@@ -234,36 +250,35 @@ Sposob kompilacie:
 
       5) Vytvoreny subor .uf2 nahrate do dosky.
 
-
  # Chybove kody #
-     0 - program bol normalne ukonceny (ziadna chyba sa nevyskytla).  
-     1 - chyba: nepodarilo sa spustit WSA.  
-     2 - chyba: nepodarilo sa vytvorit socket.  
-     3 - chyba: nepodarilo sa spojit socket s IP adresou (binding).  
-     4 - chyba: nepodarilo sa spustit funkciu listen pre socket.  
-     5 - chyba: nepodarilo sa pripojit klienta ku serveru (server accept).  
-     6 - chyba: nepodarilo sa nahrat vstup.  
-     7 - chyba: nepodarilo sa prijat data.  
-     8 - chyba: nepodarilo sa poslat data.  
-     9 - chyba: nepodarilo sa vygenerovat nahodne cisla.  
-     10 - chyba: klientovi sa nepodarilo pripojit ku serveru.  
-     11 - chyba: nespravne zadane cislo portu.  
-     12 - chyba: nespravne zadana ip adresa.  
-     13 - chyba: sprava bola modifikovana pocas prenosu.  
-     14 - chyba: ina strana nie je legetimnou(nevlastni spolocny zdielany kluc).
-     15 - chyba: klient zadal nespravny PIN pre SK.
-     16 - chyba: klient nedodrzial podmienky formatovania pinu.
-     17 - chyba: alokovanie pamate pre hashovanie zlyhalo.
-     18 - chyba: rozmer komprimovaneho textu je vacsi ako buffer, kam sa ulozi.
+     0 - program bol normalne ukonceny (ziadna chyba sa nevyskytla).   
+     1 - chyba: nepodarilo sa vytvorit socket.  
+     2 - chyba: nepodarilo sa nahrat vstup.  
+     3 - chyba: nepodarilo sa prijat data.  
+     4 - chyba: nepodarilo sa poslat data.  
+     4 - chyba: nepodarilo sa vygenerovat nahodne cisla.  
+     6 - chyba: klientovi sa nepodarilo pripojit ku serveru.  
+     7 - chyba: nespravne zadane cislo portu.  
+     8 - chyba: nespravne zadana ip adresa.  
+     9 - chyba: sprava bola modifikovana pocas prenosu.  
+     10 - chyba: ina strana nie je legetimnou(nevlastni spolocny zdielany kluc).
+     11 - chyba: klient zadal nespravny PIN pre SK.
+     12 - chyba: klient nedodrzial podmienky formatovania pinu.
+     13 - chyba: alokovanie pamate pre hashovanie zlyhalo.
+     14 - chyba: rozmer komprimovaneho textu je vacsi ako buffer, kam sa ulozi.
      (Buffer, kam sa ulozi, je vacsi o 100 znakov ako nekomprimovany text,
      co znamena, ze LZRW3-A musi rozsirit nekomprimovany text o 100 znakov.
      To som nevedel dosiahnut pocas svojho testovania. Aj autor naznacoval,
      ze algoritmus by nemal vyrazne rozsirit povodny text,
      takze tato chyba ma EXTREMNE malu pravdepodobnost vyskytu.)
-     19 - chyba: zlyhalo otvorenie suboru(File not found).
-     20 - chyba: nespravny format data v txt subore.
-     (Data musia byt ulozene v hexadecimalnej podobe).
-     21 - chyba: nepodporovany rozmer pre vyplnenie.
+     15 - chyba: nepodporovany rozmer pre vyplnenie.
+     16 - chyba: nespravny format sietovych konfiguracii.
+     17 - chyba: pretecenie odpovedi na otazky v SW (yes/no).
+     18 - chyba: problem s inicializaciou XDRBG.
+     19 - chyba: problem so spustenim DHCP.
+     20 - chyba: DHCP konflikt.
+     21 - chyba: problem praci s Flash pamatou.
+     22 - chyba: nespravny vstup MAC (sietovy parameter).
 
  ################
 # Zdroje #
