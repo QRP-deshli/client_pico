@@ -33,16 +33,15 @@ that ends program and returns error code value
 #define WRONG_PIN_FORMAT 12
 #define ALLOCATION_ERROR 13
 #define TEXT_OVERFLOW 14
-#define WRONG_TXT_FORMAT 15
-#define UNSUPPORTED_SIZE 16
-#define WRONG_NETWORK_CONFIG 17
-#define ANS_TEXT_OVERFLOW 18
-#define ERROR_SEEDING_XDRBG 19
+#define UNSUPPORTED_SIZE 15
+#define WRONG_NETWORK_CONFIG 16
+#define ANS_TEXT_OVERFLOW 17
+#define ERROR_SEEDING_XDRBG 18
 
-#define DHCP_ERROR 20
-#define CONFLICT_DHCP 21
-#define ERROR_FLASH 22
-#define ERROR_MAC_INPUT 23
+#define DHCP_ERROR 19
+#define CONFLICT_DHCP 20
+#define ERROR_FLASH 21
+#define ERROR_MAC_INPUT 22
 
 ///////////////////////////////////////
 /// Error Printing and System Reset ///
