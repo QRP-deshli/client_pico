@@ -63,11 +63,11 @@ void user_await_usb(void) {
            tud_cdc_read_char();  // Read and discard characters
         }
    
-        tud_cdc_write_str("\nStarting communication...\n");
-        tud_cdc_write_str("Please connect the server to the encryptor with Ethernet.\n");
-        tud_cdc_write_str("The MCU will not proceed with executing the program until this is done.\n");
-        tud_cdc_write_flush();  // Ensure data is transmitted
-   
+        tud_cdc_write_str("\nStarting communication...\n\0");
+        tud_cdc_write_flush(); // Ensure data is transmitted
+        tud_cdc_write_str("Please connect encryptor to subnet via Ethernet.\n\0");
+        tud_cdc_write_flush(); // Ensure data is transmitted
+        
         break;  // Exit the loop if the user enters something
     }
  }
